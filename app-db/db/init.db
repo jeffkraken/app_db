@@ -1,0 +1,49 @@
+.bail on
+
+DROP TABLE IF EXISTS staging_users;
+
+CREATE TABLE IF NOT EXISTS staging_users (
+    first_name TEXT,
+    last_name TEXT,
+    email TEXT,
+    ip_address TEXT,
+    paired_bot TEXT,
+    uuid TEXT
+);
+
+.mode csv
+.headers on
+.import /sampledata.csv staging_users
+
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY,
+    first_name TEXT,
+    last_name TEXT,
+    email TEXT,
+    ip_address TEXT,
+    paired_bot TEXT,
+    uuid TEXT
+);
+
+BEGIN TRANSACTION;
+
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    ip_address,
+    paired_bot,
+    uuid
+)
+SELECT
+    first_name,
+    last_name,
+    email,
+    ip_address,
+    paired_bot,
+    uuid
+FROM staging_users;
+
+DROP TABLE staging_users;
+
+COMMIT;

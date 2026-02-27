@@ -1,0 +1,21 @@
+services:
+  db:
+    build: ./db
+    container_name: student_db
+    volumes:
+      - db_data:/data
+    restart: unless-stopped
+
+  app:
+    build: ./app
+    container_name: student_app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - db_data:/data
+    restart: unless-stopped
+
+volumes:
+  db_data:
